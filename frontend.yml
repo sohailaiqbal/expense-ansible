@@ -1,24 +1,4 @@
 
--name: Setup Frontend
-  hosts: all
-  become: true
-  tasks:
-    - name: Install NGINX
-      ansible.builtin.dnf:
-        name: nginx
-        state: installed
-
-
-
-
-
-
-
-
-
-
-
-
 # component=frontend
 # source common.sh
 
@@ -56,3 +36,12 @@
 #Head "EXTRACTING APPLICATION CONTENT"
 #unzip /tmp/${component}.zip &>>$log_file
 #echo $?
+
+-name: Setup Frontend
+  hosts: all
+  become: true
+  tasks:
+    - name: Install NGINX
+      ansible.builtin.dnf:
+        name: nginx
+        state: installed
