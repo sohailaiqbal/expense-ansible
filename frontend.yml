@@ -1,8 +1,8 @@
--name: Setup Frontend
+- name: Setup Frontend
   hosts: all
   become: true
   tasks:
-    -name: Install NGINX
+    - name: Install NGINX
       ansible.builtin.dnf:
         name: nginx
         state: installed
