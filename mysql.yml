@@ -15,9 +15,9 @@
         name: mysql-community-server
         state: installed
 
-    - name:  START MY SQL SERVICE
-      ansible.builtin.systemd_service
-        name: mysqld
+    - name: START MY SQL SERVICES
+      ansible.builtin.systemd_service:
+        name: mysql
         state: restarted
 
     - name:  SET MYSQL ROOT PASSWORD
