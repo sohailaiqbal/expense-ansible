@@ -1,0 +1,66 @@
+- name: Backend Setup
+  hosts: all
+  become: yes
+  tasks:
+    - name: DISABLING NODEJS VERSION
+      ansible.builtin.shell: dnf module disable nodejs -y
+
+    - name: ENABLING NODEJS VERSION
+      ansible.builtin.shell: dnf module enable nodejs:18 -y
+
+    - name: INSTALLING NODEJS VERSION
+      ansible.builtin.dnf:
+        name: nodejs
+        state: installed
+
+    - name: BACKEND SERVICE CONFIGURATION
+      ansible.builtin.copy:
+        src: backend.service
+        dest: /etc/systemd/system/backend.service
+
+    - name: ADDING APPLICATION USER
+      ansible.builtin.user:
+        name: expense
+
+    - name: DELETING EXITING APP CONTENT
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: CREATING APPLICATION DIRECTORY
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: DOWNLOADING and Extracting APPLICATION CONTENT
+      ansible.builtin.unarchive:
+        src: https://expense-artifacts.s3.amazonaws.com/backend.zip
+        dest: /app
+        remote_src: true
+
+    - name: DOWNLOADING APPLICATION DEPENDENCIES
+      community.general.npm:
+        path: /app
+
+    - name: RELOADING SYSTEM D ENABLE AND BACKEND SERVICE
+      ansible.builtin.systemd_service:
+        name:backend
+        state: restarted
+        enabled: yes
+
+    - name: INSTALLING MYSQL CLIENT
+      ansible.builtin.dnf:
+        src: mysql
+        state: installed
+
+    - name: LOADING SCHEMA
+      community.mysql.mysql_db:
+        state: import
+        name: all
+        target: /app/schema/backend.sql
+        login_user: root
+        login_password: ExpenseApp@1
+        login_host: mysql-dev.sidevops.online
+
+
+
